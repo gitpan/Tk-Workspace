@@ -1,5 +1,7 @@
 package Tk::RemoteFileSelect;
-my $RCSRevKey = '$Revision: 0.55 $';
+# Temp version of CPAN.
+$VERSION=0.56;
+my $RCSRevKey = '$Revision: 0.56 $';
 $RCSRevKey =~ /Revision: (.*?) /;
 $VERSION=$1;
 use vars qw($VERSION @EXPORT_OK);
@@ -56,7 +58,7 @@ to the FileSelect.pm POD documentation.
 
   First development version.
 
-  $Revision: 0.55 $
+  $Revision: 0.56 $
 
 =cut
 

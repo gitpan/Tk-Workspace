@@ -42,8 +42,8 @@ SYNOPSIS
                                      name => 'workspace' );
 
 DESCRIPTION
-    Workspace uses the Tk::TextUndo widget to create an embedded Perl text
-    editor. The resulting file can be run as a standalone program.
+    Workspace uses a modified Tk::Text widget to create an embedded Perl
+    text editor. The resulting file can be run as a standalone program.
 
 OPTIONS
     In normal use, common X toolkit options apply to non-text areas, like
@@ -300,6 +300,9 @@ KEY BINDINGS
         Alt-C                 Copy Selection to Clipboard
         Alt-V                 Insert Clipboard Contents at Cursor
         Alt-F                 Search & Replace
+        Alt-H                 Select Paragraph
+        Alt-L                 Fill Paragraph
+        Alt-P                 Print
 
         Right, Ctrl-F         Forward Character
         Left, Ctrl-B          Backward Character
@@ -336,6 +339,9 @@ KEY BINDINGS
         Ctrl-X                Clear Selection
         Ctrl-T                Reverse Order of Characters on Either Side
                               of the Cursor
+        Ctrl-.                Center the line the insertion cursor is on
+                              in the window.
+
         Mouse Button 1:
         Single Click: Set Insertion Cursor at Mouse Pointer
         Double Click: Select Word Under the Mouse Pointer and Position 
@@ -394,7 +400,7 @@ CREDITS
     Perl by Larry Wall and many others.
 
 REVISION
-    $Id: Workspace.pm,v 1.63 2000/12/30 12:15:32 kiesling Exp $
+    $Id: Workspace.pm,v 1.71 2001/08/01 08:09:48 kiesling Exp $
 
 SEE ALSO:
     Tk::overview(1), Tk::ColorEditor(1), perl(1) manual pages.

@@ -1,5 +1,9 @@
-package XFontSelect;
-my $RCSRevKey = '$Revision: 0.42 $';
+package Tk::XFontSelect;
+$VERSION=0.43;
+# This is a kludge to make the CPAN version software
+# and non-GNU make users happy.  The real version
+# is taken from the RCS record.
+my $RCSRevKey = '$Revision: 0.43 $';
 $RCSRevKey =~ /Revision: (.*?) /;
 $VERSION=$1;
 use vars qw( $VERSION );
@@ -34,7 +38,7 @@ xlsfonts(1) man page.
 
 First Release Version
 
-$Revision: 0.42 $
+$Revision: 0.43 $
 
 =cut 
 

@@ -1,7 +1,13 @@
 package Tk::Workspace;
-my $RCSRevKey = '$Revision: 1.64 $';
+# Temp version for CPAN
+$VERSION=1.72;
+my $RCSRevKey = '$Revision: 1.72 $';
 $RCSRevKey =~ /Revision: (.*?) /;
 $VERSION=$1;
+
+# 
+# 1. Added setFixedTabs call.
+#
 
 require Exporter;
 use Carp;
@@ -74,7 +80,7 @@ Options can begin with either one (`-'), or two (`--') dashes.
 end-of-cmd-help
 
 my @Workspaceobject = 
-    ('#!/usr/bin/perl',
+    ('#!/usr/local/bin/perl',
      'my $text=\'\';',
      'my $geometry=\'565x351+100+100\';',
      'my $wrap=\'word\';',
@@ -169,7 +175,7 @@ sub new {
 		       -background => $defaultbackgroundcolor,
 		       -exportselection => 'true',
 		       -borderwidth => 0,
-		     Name => 'workspaceText' );
+		       Name => 'workspaceText' );
     if( &requirecond("Unicode::Map") ) {
       if( &requirecond("Unicode::String") ) {
 	$self -> {hasunicode} = '1';
@@ -185,6 +191,7 @@ sub new {
     my $t = $self -> text;
     $t -> Subwidget('yscrollbar') -> configure(-width=>10);
     $t -> Subwidget('xscrollbar') -> configure(-width=>10);
+    $t -> setFixedTabs ( 5 );
     $self -> window -> protocol( WM_TAKE_FOCUS, sub{ $self -> wmgeometry});
     # Prevents errors when trying to paste from an empty clipboard.
     $t -> clipboardAppend( '' );
@@ -531,11 +538,15 @@ sub menus {
 				 -state => 'normal',
 				 -font => $menufont,
 				 -command => sub{$self -> about});
-    $self -> {helpmenu} -> add ( 'command', -label => 'Help...',
+    $self -> {helpmenu} -> add ( 'command', -label => 'Workspace Help...',
 				 -state => 'normal',
 				 -font => $menufont,
 				 -accelerator => "F1",
 				 -command => sub{$self -> self_help});
+    $self -> {helpmenu} -> add ( 'command', -label => 'Text Editor Commands...',
+				 -state => 'normal',
+				 -font => $menufont,
+				 -command => sub{$self -> edit_help});
 }
 
 ###
@@ -830,6 +841,18 @@ sub postpopupmenu {
     ($self -> popupmenu) -> post( $x, $y );
 }
 
+sub fill_paragraph {
+  my $self = shift;
+  my $t = $self -> {text};
+  $t -> paragraphFill;
+}
+
+sub select_paragraph {
+    my $self = shift;
+    my $t = $self -> {text};
+    $t -> selectPara;
+}
+
 sub goto_line {
   my $self = shift;
   my $d = $self -> window -> DialogBox( -title => 'Goto Line',
@@ -1051,7 +1074,7 @@ sub mktmpfile {
   open FILE, ">/tmp/$name$$.tmp" 
     or warn "Could not open /tmp/$name$$\: @!\n";
   my $contents = $self -> text -> get( '1.0', 'end' );
-  printf FILE $contents;
+  print FILE $contents;
   close FILE;
   return "/tmp/$name$$.tmp";
 }
@@ -1122,6 +1145,7 @@ sub write_to_disk {
     my $geometry;
     my $workspacepath = $workspacename;
     my $tmppath = $workspacepath . ".tmp";
+    my $perlpath = `which perl`;
     my $contents;
     my $object;
     my $x;
@@ -1147,7 +1171,7 @@ sub write_to_disk {
     $self -> watchcursor;
     open FILE, ">>" . $tmppath;
     $contents = ($self -> text) -> get( '1.0', 'end' );
-    printf FILE '#!/usr/bin/perl' . "\n";
+    print FILE '#!' . $perlpath . "\n";
 
     $geometry= ($self -> window) -> geometry;
     $geometry =~ m/([0-9]+)x([0-9]+)\+([0-9]+)\+([0-9]+)/;
@@ -1163,9 +1187,9 @@ sub write_to_disk {
     $f = $self -> textfont;
 
     # concatenate text.
-    printf FILE 'my $text = <<\'end-of-text\';' . "\n";
-    printf FILE $contents;
-    printf FILE "end-of-text\n";
+    print FILE 'my $text = <<\'end-of-text\';' . "\n";
+    print FILE $contents;
+    print FILE "end-of-text\n";
 
     # This re-creates on the default workspace object, except
     # the first line, the name, height and width, x and y orgs,
@@ -1183,7 +1207,7 @@ sub write_to_disk {
     grep { s/insert\=\'.*\'/insert=\'$ip\'/ } @tmpobject;
     grep { s/#!\/usr\/bin\/perl// } @tmpobject;
     grep { s/my \$text=\'\'\;// } @tmpobject;
-    foreach $line ( @tmpobject ) { printf FILE $line . "\n"; };
+    foreach $line ( @tmpobject ) { print FILE $line . "\n"; };
     close FILE;
     {
       my @remove_old = ( 'mv', $tmppath, $workspacepath );
@@ -1225,7 +1249,7 @@ grep
 	or die "Can't open Workspace " . $workspacename;
     # This creates on the default workspace object.
 
-    foreach $line ( @tmpobject ) { printf FILE $line . "\n"; }
+    foreach $line ( @tmpobject ) { print FILE $line . "\n"; }
     close FILE;
 # Havn't figured out a way to use the umask function w/o
 # locking up... until then, set perms to rwx for owner only.
@@ -1357,7 +1381,7 @@ sub about {
 
     $title_text -> configure ( -font => $menufont,
 			       -text =>
-	       'Workspace.pm by rkiesling@mainmatter.com <Robert Kiesling>' );
+	       'Workspace.pm by rkiesling@mainmatter.com' );
     $version_text -> configure ( -font => $menufont,
 				 -text => "Version:  $VERSION");
     $name_text -> configure ( -font => $menufont,
@@ -1557,8 +1581,44 @@ sub self_help {
     $textwidget -> Subwidget('xscrollbar') -> configure(-width=>10);
     $textwidget -> insert( 'end', $help_text );
 
-    $buttonframe -> Button( -text => 'Close',
+    $buttonframe -> Button( -text => 'Dismiss',
 			    -font => $menufont,
+			    -default => 'active',
+			    -command => sub{$helpwindow -> DESTROY} ) ->
+				pack;
+}
+
+sub edit_help {
+    my $libfilename = &libname;
+    my $help_text;
+    my $helpwindow;
+    my $textwidget;
+
+    $libfilename =~ s/Workspace/WorkspaceText/;
+    open  HELP, 'pod2text < '.$libfilename.' |'  or $help_text =
+"Unable to process help text for $libfilename.";
+    while (<HELP>) {
+	$help_text .= $_;
+    }
+    close( HELP );
+
+    $helpwindow = new MainWindow( -title => "$appfilename Help" );
+    my $textframe = $helpwindow -> Frame( -container => 0,
+					  -borderwidth => 1 ) -> pack;
+    my $buttonframe = $helpwindow -> Frame( -container => 0,
+					  -borderwidth => 1 ) -> pack;
+    $textwidget = $textframe
+	-> Scrolled( 'Text',
+		     -font => $defaulttextfont,
+		     -scrollbars => 'e' ) -> pack( -fill => 'both',
+						   -expand => 1 );
+    $textwidget -> Subwidget('yscrollbar') -> configure(-width=>10);
+    $textwidget -> Subwidget('xscrollbar') -> configure(-width=>10);
+    $textwidget -> insert( 'end', $help_text );
+
+    $buttonframe -> Button( -text => 'Dismiss',
+			    -font => $menufont,
+			    -default => 'active',
 			    -command => sub{$helpwindow -> DESTROY} ) ->
 				pack;
 }
@@ -1763,7 +1823,7 @@ __END__
 
 =head1 DESCRIPTION
 
-Workspace uses the Tk::TextUndo widget to create an embedded Perl
+Workspace uses a modified Tk::Text widget to create an embedded Perl
 text editor.  The resulting file can be run as a standalone
 program.
 
@@ -2055,6 +2115,9 @@ and Tk::bind man pages.
     Alt-C                 Copy Selection to Clipboard
     Alt-V                 Insert Clipboard Contents at Cursor
     Alt-F                 Search & Replace
+    Alt-H                 Select Paragraph
+    Alt-L                 Fill Paragraph
+    Alt-P                 Print
 
     Right, Ctrl-F         Forward Character
     Left, Ctrl-B          Backward Character
@@ -2091,6 +2154,9 @@ and Tk::bind man pages.
     Ctrl-X                Clear Selection
     Ctrl-T                Reverse Order of Characters on Either Side
                           of the Cursor
+    Ctrl-.                Center the line the insertion cursor is on
+                          in the window.
+
     Mouse Button 1:
     Single Click: Set Insertion Cursor at Mouse Pointer
     Double Click: Select Word Under the Mouse Pointer and Position 
@@ -2156,7 +2222,7 @@ Perl by Larry Wall and many others.
 
 =head1 REVISION
 
-$Id: Workspace.pm,v 1.64 2001/03/21 15:28:14 kiesling Exp $
+$Id: Workspace.pm,v 1.72 2001/08/01 08:41:18 kiesling Exp $
 
 =head1 SEE ALSO:
 

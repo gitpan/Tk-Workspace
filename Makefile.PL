@@ -25,3 +25,6 @@ WriteMakefile( NAME => 'Tk::WorkspaceText',
 WriteMakefile( NAME => 'Tk::Workspace',
 	       VERSION_FROM => 'Workspace.pm',
 	       );
+WriteMakefile( NAME => 'Tk::PrintDialog',
+	       VERSION_FROM => 'PrintDialog.pm',
+	       );
