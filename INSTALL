@@ -1,0 +1,78 @@
+Tk::Workspace.pm, Version 1.62, installation:
+
+The Tk::Workspace.pm distribution has been tested only on the Linux
+and Solaris operating systems.  Refer all questions and problem
+reports to the author, rkiesling@mainmatter.com.
+
+
+System Requirements:
+
+1.  A Unix or derivative operating system.
+2.  Perl version 5.005 or greater.
+3.  Perl/Tk, version 800.022 or later.
+4.  GNU make.
+
+Optional:
+
+The following packages, which are available at http://www.cpan.org/,
+are required to enable specific features: 
+
+  Remote File Import/Export
+
+    1. Net::FTP (part of libnet)
+
+  Unicode Support:
+
+    1. MIME::Base64
+    2. Unicode::Map
+    3. Unicode::String
+
+Installation:
+
+1.  Untar the workspace-1.62 archive with the guzip and tar commands:
+
+  # gzip -dc Workspace-1.62.tar.gz | tar xvf -
+ 
+   or, using GNU tar,
+
+  # tar zxvf Workspace-1.62.tar.gz
+
+2.  Change to the top-level subdirectory:
+
+  # cd workspace-1.62
+
+3.  The top-level Makefile should work on any Unix or derivative
+    system that has GNU make installed.  It uses the Perl ExtUtils 
+    installation to build the package's Makefile.  At the prompt, 
+    type:
+
+  # perl Makefile.PL
+
+4.  Build the program modules and documentation.  Type:
+
+  # make
+
+5.  If necessary, become root (via "su", for example), and 
+    install the source files and documentation in the system's 
+    site_perl library.
+
+  # su
+  Enter Password:
+  $ make install
+
+6.  Install the 'mkws' and 'upgrade' programs somewhere 
+    convenient, like /usr/local/bin, and copy the
+    'upgrade.man' file to '/usr/local/man/man1/upgrade.1'.  
+
+7.  Optionally, install the workspace.xbm icon where
+    the window manager can locate it, and set it as 
+    the default icon resource.
+
+Copyright:
+
+This software is distributed under the Perl Artistic License.
+Please refer to the file "Artistic" in this directory.
+
+Bugs:
+
+Please send bug reports to: rkiesling@mainmatter.com
