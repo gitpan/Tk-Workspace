@@ -3,41 +3,25 @@ use ExtUtils::MakeMaker;
 # how to influence the contents of the Makefile that
 # is written.
 
-WriteMakefile( PREREQ_PM => { "Tk"  => '800.022' },
+WriteMakefile( 
 	       NAME => 'Tk::XFontSelect',
 	       VERSION_FROM => 'XFontSelect.pm',
-	       "dist"  => { COMPRESS  => "gzip -9f",
-			    SUFFIZ    => ".gz"  } 
 	       );
 	      
-WriteMakefile( PREREQ_PM => { "Tk"  => '800.022' },
+WriteMakefile( 
 	       NAME => 'Tk::RemoteFileSelect',
 	       VERSION_FROM => 'RemoteFileSelect.pm',
-	       "dist"  => { COMPRESS  => "gzip -9f",
-			    SUFFIZ    => ".gz"  } 
 	       );
 	      
-WriteMakefile( PREREQ_PM => { "Tk"  => '800.022' },
-	       NAME => 'Tk::Shell',
+WriteMakefile( NAME => 'Tk::Shell',
 	       VERSION_FROM => 'Shell.pm',
-	       "dist"  => { COMPRESS  => "gzip -9f",
-			    SUFFIZ    => ".gz"  } 
 	       );
-WriteMakefile( PREREQ_PM => { "Tk"  => '800.022' },
-	       NAME => 'Tk::SearchDialog',
+WriteMakefile( NAME => 'Tk::SearchDialog',
 	       VERSION_FROM => 'SearchDialog.pm',
-	       "dist"  => { COMPRESS  => "gzip -9f",
-			    SUFFIZ    => ".gz"  } 
 	       );
-WriteMakefile( PREREQ_PM => { "Tk"  => '800.022' },
-	       NAME => 'Tk::WorkspaceText',
+WriteMakefile( NAME => 'Tk::WorkspaceText',
 	       VERSION_FROM => 'WorkspaceText.pm',
-	       "dist"  => { COMPRESS  => "gzip -9f",
-			    SUFFIZ    => ".gz"  } 
 	       );
-WriteMakefile( PREREQ_PM => { "Tk"  => '800.022' },
-	       NAME => 'Tk::Workspace',
+WriteMakefile( NAME => 'Tk::Workspace',
 	       VERSION_FROM => 'Workspace.pm',
-	       "dist"  => { COMPRESS  => "gzip -9f",
-			    SUFFIZ    => ".gz"  } 
 	       );
