@@ -1,6 +1,6 @@
 NAME
       Workspace.pm--Persistent, multi-purpose text processor.
-      (File browser, shell, editor) script. 
+      (File browser, shell, editor) script.
       Requires Perl/Tk; optionally Net::FTP.
 
 SYNOPSIS
@@ -15,7 +15,7 @@ SYNOPSIS
                      [-font | -fn <fontdesc>] [-importfile <filename>]
                      [-exportfile <filename>] [-dump] [-xrm <pattern>]
                      [-class <Classname>] [-display | -screen <dpyname>]
-                     [-title <workspacename>] [-help] [-iconic] 
+                     [-title <workspacename>] [-help] [-iconic]
                      [-motif] [-synchronous] [-write] [-quit]
 
        # Open from a Perl script:
@@ -173,6 +173,11 @@ MENU FUNCTIONS
 
     Export Text -- Write the contents of the workspace to a text file.
 
+    The Import and Export Text functions allow saving to files on remote
+    hosts using FTP, if the Perl Net::FTP module is installed. Please refer
+    to the file INSTALL in the distribution archive and the
+    Tk::RemoteFileSelect manual page.
+
     System Command -- Prompts for the name of a command to be executed by
     the shell, /bin/sh. The output is inserted into the workspace.
 
@@ -202,14 +207,20 @@ MENU FUNCTIONS
     position. Other destinations are:
 
       - File--Write output to the file name specified.
-      - Terminal--Write output to the Workspace's STDOUT or to a 
+      - Terminal--Write output to the Workspace's STDOUT or to a
         character device specified as the output file.
       - New Workspace--Write output to a new Workspace with the
         name specified.
 
+    If the Perl Net::FTP module is installed, filter output can be sent to a
+    remote host, using the pathname syntax, hostname:/filepathname .
+
     Save -- Save the workspace to disk.
 
     Quit -- Close the workspace window, optionally saving to disk.
+
+    Workspaces are saved with file mode permissions 0700 (read, write, and
+    execute for the owner of the file).
 
   Edit Menu
 
@@ -242,6 +253,14 @@ MENU FUNCTIONS
 
     Scroll Bars -- Select from scroll bars at right or left, top or bottom
     of the text area.
+
+    Encoding -- Select the encoding to use when exporting text. Does not
+    affect the Workspace text itself. When importing, the text is mapped
+    into ISO-8859-1, regardless of encoding. This option is only available
+    if the UTF16 libraries are installed on the system. If they aren't, then
+    the Workspace uses the default ISO 8859-1 encoding. Refer to the file
+    INSTALL in the distribution archive for information about the required
+    libraries.
 
     Show/Hide Menubar -- Toggle whether the menubar is visible. A popup
     version of the menus is always available by pressing the right mouse
@@ -281,7 +300,7 @@ KEY BINDINGS
         Alt-C                 Copy Selection to Clipboard
         Alt-V                 Insert Clipboard Contents at Cursor
         Alt-F                 Search & Replace
-    
+
         Right, Ctrl-F         Forward Character
         Left, Ctrl-B          Backward Character
         Up, Ctrl-P            Up One Line
@@ -317,7 +336,6 @@ KEY BINDINGS
         Ctrl-X                Clear Selection
         Ctrl-T                Reverse Order of Characters on Either Side
                               of the Cursor
-    
         Mouse Button 1:
         Single Click: Set Insertion Cursor at Mouse Pointer
         Double Click: Select Word Under the Mouse Pointer and Position 
@@ -334,7 +352,7 @@ KEY BINDINGS
         Click: Copy Selection into Text at the Mouse Pointer
         Drag:Shift View
 
-        Mouse Button 3: 
+        Mouse Button 3:
         Pop Up Menu Bar
 
         Meta                  Escape
@@ -376,7 +394,7 @@ CREDITS
     Perl by Larry Wall and many others.
 
 REVISION
-    $Id: Workspace.pm,v 1.58 2000/12/03 01:04:49 kiesling Exp kiesling $
+    $Id: Workspace.pm,v 1.63 2000/12/30 12:15:32 kiesling Exp $
 
 SEE ALSO:
     Tk::overview(1), Tk::ColorEditor(1), perl(1) manual pages.

@@ -1,5 +1,5 @@
 package Tk::SearchDialog;
-my $RCSRevKey = '$Revision: 0.41 $';
+my $RCSRevKey = '$Revision: 0.42 $';
 $RCSRevKey =~ /Revision: (.*?) /;
 $VERSION=$1;
 use vars qw( $VERSION );
@@ -70,7 +70,7 @@ have some entry validation.
 
 =head1 VERSION INFORMATION
 
-$Id: SearchDialog.pm,v 0.41 2000/11/30 23:09:37 kiesling Exp $
+$Id: SearchDialog.pm,v 0.42 2000/12/30 12:02:47 kiesling Exp $
 
 Author: rkiesling@mainmatter.com <Robert Kiesling>
 

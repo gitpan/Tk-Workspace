@@ -1,4 +1,4 @@
-Tk::Workspace.pm, Version 1.62, installation:
+Tk::Workspace.pm, Version 1.63, installation:
 
 The Tk::Workspace.pm distribution has been tested only on the Linux
 and Solaris operating systems.  Refer all questions and problem
@@ -29,30 +29,36 @@ are required to enable specific features:
 
 Installation:
 
-1.  Untar the workspace-1.62 archive with the guzip and tar commands:
+1.  Untar the workspace-1.63 archive with the guzip and tar commands:
 
-  # gzip -dc Workspace-1.62.tar.gz | tar xvf -
+  # gzip -dc Workspace-1.63.tar.gz | tar xvf -
  
    or, using GNU tar,
 
-  # tar zxvf Workspace-1.62.tar.gz
+  # tar zxvf Workspace-1.63.tar.gz
 
 2.  Change to the top-level subdirectory:
 
-  # cd workspace-1.62
+  # cd workspace-1.63
 
-3.  The top-level Makefile should work on any Unix or derivative
+3.  Optionally, install the workspace.xpm icon in your normal personal
+    or system icon directory if you have permission to do so.  (For
+    example, "/home/joeuser/.icons/workspace.xpm".)  Edit the value of
+    $iconpath in line 32 of Workspace.pm to the icon's full pathname,
+    including the quotes.
+
+4.  The top-level Makefile should work on any Unix or derivative
     system that has GNU make installed.  It uses the Perl ExtUtils 
     installation to build the package's Makefile.  At the prompt, 
     type:
 
   # perl Makefile.PL
 
-4.  Build the program modules and documentation.  Type:
+5.  Build the program modules and documentation.  Type:
 
   # make
 
-5.  If necessary, become root (via "su", for example), and 
+6.  If necessary, become root (via "su", for example), and 
     install the source files and documentation in the system's 
     site_perl library.
 
@@ -60,13 +66,11 @@ Installation:
   Enter Password:
   $ make install
 
-6.  Install the 'mkws' and 'upgrade' programs somewhere 
+7.  Install the 'mkws' and 'upgrade' programs somewhere 
     convenient, like /usr/local/bin, and copy the
     'upgrade.man' file to '/usr/local/man/man1/upgrade.1'.  
 
-7.  Optionally, install the workspace.xbm icon where
-    the window manager can locate it, and set it as 
-    the default icon resource.
+
 
 Copyright:
 

@@ -1,5 +1,5 @@
 package Tk::Workspace;
-my $RCSRevKey = '$Revision: 1.62 $';
+my $RCSRevKey = '$Revision: 1.63 $';
 $RCSRevKey =~ /Revision: (.*?) /;
 $VERSION=$1;
 
@@ -27,6 +27,9 @@ use IPC::Open2;
 use IO::Select;
 
 @ISA=qw(Tk::Widget Exporter);
+
+# Set this to the pathname of the workspace.xpm on your system.
+my $iconpath = "/home/kiesling/.icons/workspace.xpm";
 
 $SIG{WINCH} = \&do_win_signal_event;
 sub do_win_signal_event {
@@ -172,11 +175,16 @@ sub new {
 	$self -> {hasunicode} = '1';
       }
     }
+    if( -f $iconpath ) {
+      my $icon =
+	$self -> {text} -> toplevel -> Pixmap(-file => $iconpath);
+      $self -> {window} -> toplevel -> iconimage($icon);
+    }
     &menus( $self );
     &set_scroll( $self );
     my $t = $self -> text;
-#    $t -> Subwidget('yscrollbar') -> configure(-width=>10);
-#    $t -> Subwidget('xscrollbar') -> configure(-width=>10);
+    $t -> Subwidget('yscrollbar') -> configure(-width=>10);
+    $t -> Subwidget('xscrollbar') -> configure(-width=>10);
     $self -> window -> protocol( WM_TAKE_FOCUS, sub{ $self -> wmgeometry});
     # Prevents errors when trying to paste from an empty clipboard.
     $t -> clipboardAppend( '' );
@@ -506,7 +514,8 @@ sub menus {
     $self
 	-> {optionsmenu} ->
 	    add ( 'command',
-		  -label => 'Show/Hide Menubar',
+		  -label => (($self -> menubarvisible)?'Hide ':'Show ').
+		    'Menubar',
 		  -command => [\&togglemenubar, $self ] );
     $self -> {optionsmenu} -> add ('separator');
     $self -> {optionsmenu} -> add ( 'command', -label =>
@@ -558,6 +567,7 @@ sub importfile {
 			     $_ );
   }
   close I;
+  $self ->{text}->{SubWidget}{workspacetext}{modified} = '1';
 }
 
 sub exportfile {
@@ -588,6 +598,7 @@ sub title {
   $self -> window -> configure( -title => $arg );
   $self -> window -> update;
   $self -> name( $arg );
+  $self ->{text}->{SubWidget}{workspacetext}{modified} = '1';
 }
 
 sub window {
@@ -723,7 +734,11 @@ sub togglemenubar {
 				  -fill => 'x' );
 	$self -> {menubarvisible} = '1';
     }
+    $self -> optionsmenu -> entryconfigure( 4, -label =>
+			(($self -> menubarvisible) ?
+			 'Hide ': 'Show ' ) . 'Menubar' );
     $self -> {text} -> pack( -side => 'top', -fill => 'both', -expand => '1' );
+    $self ->{text}->{SubWidget}{workspacetext}{modified} = '1';
     return $self -> {menubarvisible}
 }
 
@@ -796,6 +811,7 @@ sub geometry {
       $self -> width($1); $self -> height($2); $self -> x($3);
       $self -> y($4);
       my $ip = $self -> text -> index( 'insert' );
+       $self ->{text}->{SubWidget}{workspacetext}{modified} = '1';
       return ($cg, $ip);
     } else {
        warn "geometry: wrong no. of arguments: $nargs.\n";
@@ -857,6 +873,7 @@ sub scrollbar {
 	    $self -> {scroll} =~ s/$p//;
 	}
 	&set_scroll( $self );
+	$self ->{text}->{SubWidget}{workspacetext}{modified} = '1';
 	return $self -> {scroll};
     }
 }
@@ -886,6 +903,7 @@ sub ws_font {
     $self -> geometry($newwidth . 'x' . $newheight .
 				  '+' . $x . '+' . $y,
 				  $self -> insertionpoint );
+    $self ->{text}->{SubWidget}{workspacetext}{modified} = '1';
     return;
 }
 
@@ -894,6 +912,7 @@ sub elementColor {
   my ($attribute, $color);
   my $c =
     $w -> window -> ColorEditor( -widgets => [$w -> text] );
+  $self ->{text}->{SubWidget}{workspacetext}{modified} = '1';
   $c -> Show;
 }
 
@@ -966,6 +985,7 @@ sub filter_text {
       `rm -f $tmpname $outfile`;
     }
   }
+  $self ->{text}->{SubWidget}{workspacetext}{modified} = '1';
   $self -> defaultcursor;
 }
 
@@ -1165,13 +1185,15 @@ sub write_to_disk {
     grep { s/my \$text=\'\'\;// } @tmpobject;
     foreach $line ( @tmpobject ) { printf FILE $line . "\n"; };
     close FILE;
-    my @remove_old = ( 'mv', $tmppath, $workspacepath );
-    system( @remove_old );
-    my $mask = umask;
-   chmod (0666 &~ $mask) , $workspacepath;
-#   This should set the correct executable bits for the mask, at
-#   least bash DTRT.
-    system( 'chmod', '+x', $workspacepath );
+    {
+      my @remove_old = ( 'mv', $tmppath, $workspacepath );
+      system( @remove_old );
+    }
+    {
+      # set restrictive perms until I get the umask lockup
+      # figured out.
+      chmod 0700, $workspacepath;
+    }
     $self -> defaultcursor;
    $t->{SubWidget}{workspacetext}{modified} = '';
 EXIT:	   if ( $quit ) { $self -> window -> WmDeleteWindow; }
@@ -1205,7 +1227,9 @@ grep
 
     foreach $line ( @tmpobject ) { printf FILE $line . "\n"; }
     close FILE;
-    chmod 0755, $workspacename;
+# Havn't figured out a way to use the umask function w/o
+# locking up... until then, set perms to rwx for owner only.
+chmod 0700, $workspacename;
     utime time, time, ($workspacename);
     return( $workspacename );
 }
@@ -1281,6 +1305,7 @@ sub ws_undo {
     my $self = shift;
     my $undo;
     $undo = ($self -> {text}) -> undo;
+    $self ->{text}->{SubWidget}{workspacetext}{modified} = '1';
     return $self
 }
 
@@ -1415,6 +1440,7 @@ sub user_import {
     ($self -> {text}) -> pack;
     close IMPORT;
     unlink( $tmpfile ) if -e $tmpfile;
+    $self ->{text}->{SubWidget}{workspacetext}{modified} = '1';
     $self -> defaultcursor;
 }
 
@@ -1900,6 +1926,11 @@ insertion point.
 
 Export Text -- Write the contents of the workspace to a text file.
 
+The Import and Export Text functions allow saving to files on remote
+hosts using FTP, if the Perl Net::FTP module is installed.  Please
+refer to the file INSTALL in the distribution archive and the
+Tk::RemoteFileSelect manual page.
+
 System Command -- Prompts for the name of a command to be executed
 by the shell, /bin/sh.  The output is inserted into the workspace.
 
@@ -1934,9 +1965,16 @@ cursor position.  Other destinations are:
   - New Workspace--Write output to a new Workspace with the
     name specified.
 
+If the Perl Net::FTP module is installed, filter output can be
+sent to a remote host, using the pathname syntax,
+hostname:/filepathname .
+
 Save -- Save the workspace to disk.
 
 Quit -- Close the workspace window, optionally saving to disk.
+
+Workspaces are saved with file mode permissions 0700 (read, write, and
+execute for the owner of the file).
 
 =head2 Edit Menu
 
@@ -2118,7 +2156,7 @@ Perl by Larry Wall and many others.
 
 =head1 REVISION
 
-$Id: Workspace.pm,v 1.62 2000/12/15 20:15:50 kiesling Exp kiesling $
+$Id: Workspace.pm,v 1.63 2000/12/30 12:15:32 kiesling Exp $
 
 =head1 SEE ALSO:
 

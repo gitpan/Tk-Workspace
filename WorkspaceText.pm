@@ -47,7 +47,7 @@ sub clipboardColumnCut {
 sub clipboardColumnPaste {
  my ($w) = @_;
  $w -> SUPER::clipboardColumnPaste;
- $w -> {modified};
+ $w -> {modified} = '1';
 }
 
 sub ClassInit {
@@ -60,6 +60,7 @@ sub ClassInit {
 sub Populate {
   my ($w, $args) = @_;
   $w -> SUPER::Populate($args);
+  $w -> {modified} = '';
   return $w;
 }
 
