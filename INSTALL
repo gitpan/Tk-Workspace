@@ -1,4 +1,4 @@
-Tk::Workspace.pm, Version 1.71, installation:
+Tk::Workspace.pm, Version 1.74, installation:
 
 The Tk::Workspace.pm distribution has been tested only on the Linux
 and Solaris operating systems.  Refer all questions and problem
@@ -29,17 +29,17 @@ are required to enable specific features:
 
 Installation:
 
-1.  Untar the Tk-Workspace-1.71 archive with the guzip and tar commands:
+1.  Untar the Tk-Workspace-1.74 archive with the guzip and tar commands:
 
-  # gzip -dc Tk-Workspace-1.71.tar.gz | tar xvf -
+  # gzip -dc Tk-Workspace-1.74.tar.gz | tar xvf -
  
    or, using GNU tar,
 
-  # tar zxvf Tk-Workspace-1.71.tar.gz
+  # tar zxvf Tk-Workspace-1.74.tar.gz
 
 2.  Change to the top-level subdirectory:
 
-  # cd Tk-Workspace-1.71
+  # cd Tk-Workspace-1.74
 
 3.  Optionally, install the workspace.xpm icon in your normal personal
     or system icon directory if you have permission to do so.  (For

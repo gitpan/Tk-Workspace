@@ -1,12 +1,12 @@
 package Tk::Workspace;
 # Temp version for CPAN
 $VERSION=1.72;
-my $RCSRevKey = '$Revision: 1.72 $';
+my $RCSRevKey = '$Revision: 1.74 $';
 $RCSRevKey =~ /Revision: (.*?) /;
 $VERSION=$1;
 
 # 
-# 1. Added setFixedTabs call.
+# 1. Test version of filepath method.
 #
 
 require Exporter;
@@ -31,6 +31,7 @@ use IO::File;
 use IPC::Open3;
 use IPC::Open2;
 use IO::Select;
+use Cwd;
 
 @ISA=qw(Tk::Widget Exporter);
 
@@ -158,7 +159,8 @@ sub new {
 	cmdargs => (),
 	searchopts => (),  # Flattened hash returned from SearchDialog widget.
 	unicode => undef,
-	encoding => undef
+	encoding => undef,
+	filepath => undef
 	};
     bless($self, $class);
     my $i;
@@ -169,6 +171,7 @@ sub new {
     push @{$self -> {cmdargs}}, @cmd_args;
     if( &requirecond( "Net::FTP" ) ) { $self -> hasnet('1') }
     $self -> {window} -> {parent} = $self;
+    $self -> filepath;
     $self -> {text} =
       $self -> {window} -> Scrolled( 'WorkspaceText',
 				     -font => $defaulttextfont,
@@ -250,7 +253,7 @@ my @bool_args = ('-help', '-write', '-quit', '-dump' );
 
 sub commandline {
   my ($self) = @_;
-  my ($need_parm, $i, $prev_arg, $arg, @workargs, $nargs );
+  my ($need_parm, $i, $prev_arg, $arg, @workargs, $nargs);
   $nargs = @{$self -> {cmdargs}};
   for( $i =  $nargs; $i >= 0; $i-- ) {
     push @workargs, (${$self -> {cmdargs}}[$i]);
@@ -314,6 +317,8 @@ sub bind {
 				    sub{$self -> ws_search_again});
     ($self -> window) -> SUPER::bind('<Alt-j>',
 				    sub{$self -> goto_line});
+    ($self -> window) -> SUPER::bind('<Alt-p>',
+				     sub{$self -> print_text});
     # unbind the right mouse button.
     ($self -> window) -> SUPER::bind('Tk::TextUndo', '<3>', '');
     $self -> {window} -> SUPER::bind( '<ButtonPress-3>',
@@ -525,6 +530,11 @@ sub menus {
 		    'Menubar',
 		  -command => [\&togglemenubar, $self ] );
     $self -> {optionsmenu} -> add ('separator');
+    $self -> {optionsmenu} -> add ( 'command', -label => 
+				    'Right Margin...',
+				    -state => 'normal',
+				    -font => $menufont,
+         -command => [\&setFillColumn, $self]);
     $self -> {optionsmenu} -> add ( 'command', -label =>
 				    'Color Editor...',
 				 -state => 'normal',
@@ -628,6 +638,17 @@ sub name {
     my $self = shift;
     if (@_) { $self -> {name} = shift }
     return $self -> {name}
+}
+
+sub filepath {
+    my $self = shift;
+    if (@_) { 
+	$self -> {filepath} = shift;
+    } elsif (not defined $self -> {filepath}) {
+	$self -> {filepath} = &cwd.'/'.$0;
+	$self -> {filepath} =~ s/(\/\/)|(\/\.\/)/\//g;
+    }
+    return $self -> {filepath}
 }
 
 sub help {
@@ -930,13 +951,27 @@ sub ws_font {
     return;
 }
 
+sub setFillColumn {
+    my ($w) = @_;
+    my $d = $w -> window -> DialogBox (-title => 'Set Right Margin',
+				     -buttons => [qw/Ok Dismiss/],
+				     -default_button => 'Ok' );
+    my $oldmargin = $w -> text -> fillcolumn;
+    my $e = $d -> add ('Entry', -width => 5,
+		       -textvariable => \$oldmargin) -> 
+	pack (-expand => '1', -fill => 'x', -padx => 5, -pady => 5);
+    my $resp = $d -> Show;
+    my $newmargin = $e -> get;
+    $w -> text -> fillcolumn ($newmargin) if $resp !~ /Dismiss/;
+}
+
 sub elementColor {
   my ($w) = @_;
   my ($attribute, $color);
   my $c =
-    $w -> window -> ColorEditor( -widgets => [$w -> text] );
-  $self ->{text}->{SubWidget}{workspacetext}{modified} = '1';
+      $w -> window -> ColorEditor (-widgets => [$w -> text]);
   $c -> Show;
+  $w ->{text}->{SubWidget}{workspacetext}{modified} = '1';
 }
 
 sub filter_text {
@@ -1139,25 +1174,11 @@ sub write_to_disk {
     my $self = shift;
     my $quit = shift;
     my $workspacename = $self -> name;
-    my $height = $self -> height;
-    my $width = $self -> width;
     my $t = $self -> {text};
-    my $geometry;
-    my $workspacepath = $workspacename;
-    my $tmppath = $workspacepath . ".tmp";
+    my $tmppath = ($self -> filepath) . '.tmp';
     my $perlpath = `which perl`;
-    my $contents;
-    my $object;
-    my $x;
-    my $y;
-    my $fg;
-    my $bg;
-    my $f;
-    my $resp;
-    my $wrap;
-    my $mb;
-    my $sb;
-    my $ip;
+    my ($contents, $object, $x, $y, $fg, $bg, $f, $resp, $wrap, $mb);
+    my ($geometry, $width, $height, $sb, $ip);
 
     if( $quit ) {
       if($t->{SubWidget}{workspacetext}{modified} !~ m/1/) {
@@ -1210,13 +1231,12 @@ sub write_to_disk {
     foreach $line ( @tmpobject ) { print FILE $line . "\n"; };
     close FILE;
     {
-      my @remove_old = ( 'mv', $tmppath, $workspacepath );
+      my @remove_old = ( 'mv', $tmppath, $self -> filepath );
       system( @remove_old );
     }
     {
-      # set restrictive perms until I get the umask lockup
-      # figured out.
-      chmod 0700, $workspacepath;
+      # set restrictive perms, umask() seems to lock up 
+	chmod 0700, $self -> filepath;
     }
     $self -> defaultcursor;
    $t->{SubWidget}{workspacetext}{modified} = '';
@@ -1237,7 +1257,6 @@ sub create {
 	rename $workspacename, $workspacename . '.bak';
     }
 
-    # try again.
     #Name the workspace...
     my @tmpobject = @Workspaceobject;
     grep { s/name\=\'\'/name\=\'$workspacename\'/ } @tmpobject;
@@ -1254,8 +1273,8 @@ grep
 # Havn't figured out a way to use the umask function w/o
 # locking up... until then, set perms to rwx for owner only.
 chmod 0700, $workspacename;
-    utime time, time, ($workspacename);
-    return( $workspacename );
+utime time, time, ($workspacename);
+return( $workspacename );
 }
 
 sub ws_copy {
@@ -2189,16 +2208,16 @@ the following instance methods:
 about, bind, close_dialog, cmd_import, commandline, create,
 custom_args, defaultcursor, do_win_signal_event, dump, editmenu,
 elementColor, evalselection, exportfile, filemenu, filenotfound,
-filter, filter_dialog, filter_text, fontdialogaccept, fontdialogapply,
-fontdialogclose, geometry, goto_line, havenet, height, helpmenu,
-importfile, insertionpoint, libname, menubar, menubarvisible, menus,
-mktmpfile, my_directory, name, new, open, optionsmenu, outputfile,
-outputmode, parent_ws, popupmenu, postpopupmenu, quit, requirecond,
-scroll, scrollbar, self_help, set_scroll, text, textbackground,
-textfont, textforeground, title, togglemenubar, user_import,
-watchcursor, what_line, width, window, wmgeometry, workspaceobject,
-wrap, write, write_to_disk, ws_copy, ws_cut, ws_export, ws_font,
-ws_paste, ws_undo, x, y
+filepath, filter, filter_dialog, filter_text, fontdialogaccept, 
+fontdialogapply, fontdialogclose, geometry, goto_line, havenet, 
+height, helpmenu, importfile, insertionpoint, libname, menubar, 
+menubarvisible, menus, mktmpfile, my_directory, name, new, open, 
+optionsmenu, outputfile, outputmode, parent_ws, popupmenu, 
+postpopupmenu, quit, requirecond, scroll, scrollbar, self_help, 
+set_scroll, text, textbackground, textfont, textforeground, title, 
+togglemenubar, user_import, watchcursor, what_line, width, window, 
+wmgeometry, workspaceobject, wrap, write, write_to_disk, ws_copy, 
+ws_cut, ws_export, ws_font, ws_paste, ws_undo, x, y
 
 The following class methods are available:
 
@@ -2222,7 +2241,7 @@ Perl by Larry Wall and many others.
 
 =head1 REVISION
 
-$Id: Workspace.pm,v 1.72 2001/08/01 08:41:18 kiesling Exp $
+$Id: Workspace.pm,v 1.74 2001/09/20 00:19:27 kiesling Exp $
 
 =head1 SEE ALSO:
 

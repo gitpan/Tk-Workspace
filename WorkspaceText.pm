@@ -1,7 +1,7 @@
 package Tk::WorkspaceText;
 # Temp version for CPAN
 $VERSION=0.57;
-my $RCSRevKey = '$Revision: 0.57 $';
+my $RCSRevKey = '$Revision: 0.58 $';
 $RCSRevKey =~ /Revision: (.*?) /;
 $VERSION=$1;
 
@@ -80,7 +80,7 @@ sub Populate {
 
 sub paragraphFill {
   my ($w) = @_;
-  my (@refilledlines, $tmpline, $breakpos);
+  my ($tmpline, $breakpos);
   my ($insertrow,$insertcol) = split /\./, $w -> index ('insert');
   $previndex = $w -> prevPara ($w -> index ('insert'));
   $nextindex = $w -> nextPara ($w -> index ('insert'));
@@ -98,6 +98,8 @@ sub paragraphFill {
       $t = substr ($t, $breakpos);
   }
   $t =~ s/^ //;
+  # Trim the extra space from the end of the last line.
+  chop $t;
   $w -> insert('insert', "$t\n");
   $w -> markSet ('insert', "$insertrow.$insertcol");
   $w -> {modified} = '1';
@@ -123,9 +125,10 @@ sub prevPara {
     return $w -> SUPER::PrevPara ($args);
 }
 
-sub setFillColumn {
-    my ($w,$args) = @_;
-    $w -> {fillcolumn} = $args;
+sub fillcolumn {
+    my $self = shift;
+    if (@_) { $self -> {fillcolumn} = shift }
+    return $self -> {fillcolumn}
 }
 
 sub setFixedTabs {
@@ -196,15 +199,15 @@ filling and selection, a "text modified" flag, recentering, and
 additional key bindings.
 
 Paragraphs are defined as contiguous lines of text separated
-by blank lines.   
+by blank lines - lines that consist only of a newline ("\n").
 
 =head1 WIDGET METHODS
 
 The Tk::WorkspaceText widget supports the B<configure>
 and B<cget> methods described in the L<Tk::options> 
 documentation.  The Tk::WorkspaceText widget also inherits
-all the methods of the L<Tk::Widget>, L<Tk::Text>, and
-L<Tk::TextUndo> widget classes.
+all the methods of the Tk::Widget, Tk::Text, and
+Tk::TextUndo widget classes.
 
 In addition, Tk::WorkspaceText widgets recognize these
 methods:
@@ -246,10 +249,11 @@ argument, returns the value of the modified flag.  By default, the
 value of the modified flag is '1' if text was modified, '' if
 unmodified.
 
-=item I<$text>-E<gt>B<setFillColumn>
+=item I<$text>-E<gt>B<fillcolumn>
 
-Set the right margin column for filling paragraphs.  The default
-is column 65.
+With argument, set the right margin column for filling 
+paragraphs.  Returns the value of the right margin.
+The default is column 65.
 
 =back
 
@@ -257,8 +261,8 @@ is column 65.
 
 Tk::WorkspaceText widgets support the keybindings of the Tk::Text and
 Tk::TextUndo widgets, in addition to its own bindings.  For further
-information, please refer to the L<Tk::Text>, L<Tk::TextUndo> and
-L<Tk::bind> man pages.
+information, please refer to the Tk::Text, Tk::TextUndo, and
+Tk::bind man pages.
 
     Alt-H                 Select Paragraph
     Alt-L                 Fill Paragraph
@@ -324,15 +328,14 @@ L<Tk::bind> man pages.
 
 =head1 CREDITS
 
-Tk::WorkspaceText by rkiesling@mainmatter.com (Robert Kiesling)
+  Tk::WorkspaceText by rkiesling@mainmatter.com (Robert Kiesling)
 
-Perl/Tk by Nick Ing-Simmons.
-Tk::ColorEditor widget by Steven Lidie.
-Perl by Larry Wall and many others.
+  Perl/Tk by Nick Ing-Simmons.
+  Perl by Larry Wall and many others.
 
 =head1 REVISION
 
-$Id: WorkspaceText.pm,v 0.57 2001/08/01 08:46:28 kiesling Exp $
+$Id: WorkspaceText.pm,v 0.58 2001/09/15 02:22:54 kiesling Exp $
 
 =head1 SEE ALSO:
 
