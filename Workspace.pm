@@ -1,5 +1,5 @@
 package Tk::Workspace;
-my $RCSRevKey = '$Revision: 1.63 $';
+my $RCSRevKey = '$Revision: 1.64 $';
 $RCSRevKey =~ /Revision: (.*?) /;
 $VERSION=$1;
 
@@ -39,7 +39,7 @@ sub do_win_signal_event {
 
 my ($ptk_major_ver, $ptk_minor_ver) = split /\./, $Tk::VERSION;
 
-if( ( $ptk_major_ver lt '800' ) || ( $ptk_minor_ver lt '022' ) ) {
+if( ( $ptk_major_ver lt '800' ) || ( $ptk_minor_ver lt '015' ) ) {
      die "Fatal Error: \nThis version of Workspace.pm Requires Perl/Tk 800.022.";
 }
 
@@ -958,7 +958,7 @@ sub filter_text {
     my $outfile = "$tmpname.output";
     `$cmdstring >$outfile`;
     if( $newname =~ /\:/ ) {
-      my ($host, $remotename) =~ split /\:/, $newname;
+      my ($host, $remotename) = split /\:/, $newname;
       $remotename =~ s/^\///;
       &create( $remotename );
       `./$remotename -importfile $outfile -write -quit &`;
@@ -2156,7 +2156,7 @@ Perl by Larry Wall and many others.
 
 =head1 REVISION
 
-$Id: Workspace.pm,v 1.63 2000/12/30 12:15:32 kiesling Exp $
+$Id: Workspace.pm,v 1.64 2001/03/21 15:28:14 kiesling Exp $
 
 =head1 SEE ALSO:
 
