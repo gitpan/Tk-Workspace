@@ -1,12 +1,12 @@
-#!/usr/local/bin/perl
+#!perl
 
 =head1 NAME
 
-  upgrade -- Upgrade a workspace.
+  ws-upgrade -- Upgrade a workspace.
 
 =head1 SYNOPSIS
 
-  upgrade <workspace-file-names>
+  ws-upgrade <workspace-file-names>
 
 =head1 DESCRIPTION
   
@@ -17,7 +17,7 @@ and the text itself is saved to "<workspace-name>.txt."
 
 =head1 CREDITS
 
-  rkiesling@mainmatter.com <Robert Kiesling>
+  Robert Allan Kiesling <rkiesling@earthlink.net>
 
 =cut
 
@@ -25,7 +25,7 @@ require Carp;
 require Tk::Workspace;
 
 if( @ARGV < 1 ) { 
-	print "usage: upgrade <workspaces>\n";
+	print "usage: ws-upgrade <workspaces>\n";
 	exit( 1 );
 }
 

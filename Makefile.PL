@@ -23,8 +23,6 @@ WriteMakefile( NAME => 'Tk::WorkspaceText',
 	       VERSION_FROM => 'WorkspaceText.pm',
 	       );
 WriteMakefile( NAME => 'Tk::Workspace',
+	       EXE_FILES => [qw(mkws ws-upgrade)],
 	       VERSION_FROM => 'Workspace.pm',
-	       );
-WriteMakefile( NAME => 'Tk::PrintDialog',
-	       VERSION_FROM => 'PrintDialog.pm',
 	       );

@@ -1,4 +1,4 @@
-# This Makefile is for the Tk::PrintDialog extension to perl.
+# This Makefile is for the Tk::Workspace extension to perl.
 #
 # It was generated automatically by MakeMaker version
 # 5.45 (Revision: 1.222) from the contents of
@@ -10,8 +10,9 @@
 #
 #   MakeMaker Parameters:
 
-#	NAME => q[Tk::PrintDialog]
-#	VERSION_FROM => q[PrintDialog.pm]
+#	EXE_FILES => [q[mkws], q[ws-upgrade]]
+#	NAME => q[Tk::Workspace]
+#	VERSION_FROM => q[Workspace.pm]
 
 # --- MakeMaker post_initialize section:
 
@@ -24,17 +25,17 @@
 AR = ar
 CC = cc
 CCCDLFLAGS = -fPIC
-CCDLFLAGS =  
+CCDLFLAGS =  -Wl,-E
 DLEXT = so
 DLSRC = dl_dlopen.xs
 LD = cc
-LDDLFLAGS = -G -L/usr/local/lib
+LDDLFLAGS =  -W,l-E -G -L/usr/local/lib
 LDFLAGS =  -L/usr/local/lib 
 LIBC = /lib/libc.so
 LIB_EXT = .a
 OBJ_EXT = .o
 OSNAME = solaris
-OSVERS = 2.7
+OSVERS = 2.8
 RANLIB = :
 SO = so
 EXE_EXT = 
@@ -43,12 +44,12 @@ FULL_AR = /usr/local/bin/ar
 
 # --- MakeMaker constants section:
 AR_STATIC_ARGS = cr
-NAME = Tk::PrintDialog
-DISTNAME = Tk-PrintDialog
-NAME_SYM = Tk_PrintDialog
-VERSION = $
-VERSION_SYM = _
-XS_VERSION = $
+NAME = Tk::Workspace
+DISTNAME = Tk-Workspace
+NAME_SYM = Tk_Workspace
+VERSION = 1.72
+VERSION_SYM = 1_72
+XS_VERSION = 1.72
 INST_BIN = blib/bin
 INST_EXE = blib/script
 INST_LIB = blib/lib
@@ -89,11 +90,11 @@ MM_VERSION = 5.45
 # ROOTEXT = Directory part of FULLEXT with leading slash (eg /DBD)  !!! Deprecated from MM 5.32  !!!
 # PARENT_NAME = NAME without BASEEXT and no trailing :: (eg Foo::Bar)
 # DLBASE  = Basename part of dynamic library. May be just equal BASEEXT.
-FULLEXT = Tk/PrintDialog
-BASEEXT = PrintDialog
+FULLEXT = Tk/Workspace
+BASEEXT = Workspace
 PARENT_NAME = Tk
 DLBASE = $(BASEEXT)
-VERSION_FROM = PrintDialog.pm
+VERSION_FROM = Workspace.pm
 OBJECT = 
 LDFROM = $(OBJECT)
 LINKTYPE = dynamic
@@ -105,9 +106,8 @@ O_FILES =
 H_FILES = 
 HTMLLIBPODS    = 
 HTMLSCRIPTPODS = 
-MAN1PODS = 
-MAN3PODS = PrintDialog.pm \
-	RemoteFileSelect.pm \
+MAN1PODS = ws-upgrade
+MAN3PODS = RemoteFileSelect.pm \
 	SearchDialog.pm \
 	Shell.pm \
 	Workspace.pm \
@@ -154,8 +154,7 @@ EXPORT_LIST =
 
 PERL_ARCHIVE = 
 
-TO_INST_PM = PrintDialog.pm \
-	RemoteFileSelect.pm \
+TO_INST_PM = RemoteFileSelect.pm \
 	SearchDialog.pm \
 	Shell.pm \
 	Workspace.pm \
@@ -164,14 +163,12 @@ TO_INST_PM = PrintDialog.pm \
 
 PM_TO_BLIB = WorkspaceText.pm \
 	$(INST_LIBDIR)/WorkspaceText.pm \
-	XFontSelect.pm \
-	$(INST_LIBDIR)/XFontSelect.pm \
 	Shell.pm \
 	$(INST_LIBDIR)/Shell.pm \
+	XFontSelect.pm \
+	$(INST_LIBDIR)/XFontSelect.pm \
 	RemoteFileSelect.pm \
 	$(INST_LIBDIR)/RemoteFileSelect.pm \
-	PrintDialog.pm \
-	$(INST_LIBDIR)/PrintDialog.pm \
 	Workspace.pm \
 	$(INST_LIBDIR)/Workspace.pm \
 	SearchDialog.pm \
@@ -332,6 +329,16 @@ $(INST_ARCHAUTODIR)/.exists :: /usr/local/lib/perl5/5.6.0/sun4-solaris/CORE/perl
 
 	-@$(CHMOD) $(PERM_RWX) $(INST_ARCHAUTODIR)
 
+config :: $(INST_MAN1DIR)/.exists
+	@$(NOOP)
+
+
+$(INST_MAN1DIR)/.exists :: /usr/local/lib/perl5/5.6.0/sun4-solaris/CORE/perl.h
+	@$(MKPATH) $(INST_MAN1DIR)
+	@$(EQUALIZE_TIMESTAMP) /usr/local/lib/perl5/5.6.0/sun4-solaris/CORE/perl.h $(INST_MAN1DIR)/.exists
+
+	-@$(CHMOD) $(PERM_RWX) $(INST_MAN1DIR)
+
 config :: $(INST_MAN3DIR)/.exists
 	@$(NOOP)
 
@@ -403,24 +410,24 @@ POD2MAN = $(PERL) -we '%m=@ARGV;for (keys %m){' \
 -e 'system(qq[$$^X ].q["-I$(PERL_ARCHLIB)" "-I$(PERL_LIB)" $(POD2MAN_EXE) ].qq[$$_>$$m{$$_}])==0 or warn "Couldn\047t install $$m{$$_}\n";' \
 -e 'chmod(oct($(PERM_RW))), $$m{$$_} or warn "chmod $(PERM_RW) $$m{$$_}: $$!\n";}'
 
-manifypods : pure_all WorkspaceText.pm \
-	XFontSelect.pm \
+manifypods : pure_all ws-upgrade \
+	WorkspaceText.pm \
 	Shell.pm \
+	XFontSelect.pm \
 	RemoteFileSelect.pm \
-	PrintDialog.pm \
 	Workspace.pm \
 	SearchDialog.pm
 	@$(POD2MAN) \
+	ws-upgrade \
+	$(INST_MAN1DIR)/ws-upgrade.$(MAN1EXT) \
 	WorkspaceText.pm \
 	$(INST_MAN3DIR)/Tk::WorkspaceText.$(MAN3EXT) \
-	XFontSelect.pm \
-	$(INST_MAN3DIR)/Tk::XFontSelect.$(MAN3EXT) \
 	Shell.pm \
 	$(INST_MAN3DIR)/Tk::Shell.$(MAN3EXT) \
+	XFontSelect.pm \
+	$(INST_MAN3DIR)/Tk::XFontSelect.$(MAN3EXT) \
 	RemoteFileSelect.pm \
 	$(INST_MAN3DIR)/Tk::RemoteFileSelect.$(MAN3EXT) \
-	PrintDialog.pm \
-	$(INST_MAN3DIR)/Tk::PrintDialog.$(MAN3EXT) \
 	Workspace.pm \
 	$(INST_MAN3DIR)/Tk::Workspace.$(MAN3EXT) \
 	SearchDialog.pm \
@@ -430,6 +437,35 @@ manifypods : pure_all WorkspaceText.pm \
 
 
 # --- MakeMaker installbin section:
+
+$(INST_SCRIPT)/.exists :: /usr/local/lib/perl5/5.6.0/sun4-solaris/CORE/perl.h
+	@$(MKPATH) $(INST_SCRIPT)
+	@$(EQUALIZE_TIMESTAMP) /usr/local/lib/perl5/5.6.0/sun4-solaris/CORE/perl.h $(INST_SCRIPT)/.exists
+
+	-@$(CHMOD) $(PERM_RWX) $(INST_SCRIPT)
+
+EXE_FILES = mkws ws-upgrade
+
+FIXIN = $(PERL) -I$(PERL_ARCHLIB) -I$(PERL_LIB) -MExtUtils::MakeMaker \
+    -e "MY->fixin(shift)"
+
+pure_all :: $(INST_SCRIPT)/mkws $(INST_SCRIPT)/ws-upgrade
+	@$(NOOP)
+
+realclean ::
+	rm -f $(INST_SCRIPT)/mkws $(INST_SCRIPT)/ws-upgrade
+
+$(INST_SCRIPT)/mkws: mkws Makefile $(INST_SCRIPT)/.exists
+	@rm -f $(INST_SCRIPT)/mkws
+	cp mkws $(INST_SCRIPT)/mkws
+	$(FIXIN) $(INST_SCRIPT)/mkws
+	-@$(CHMOD) $(PERM_RWX) $(INST_SCRIPT)/mkws
+
+$(INST_SCRIPT)/ws-upgrade: ws-upgrade Makefile $(INST_SCRIPT)/.exists
+	@rm -f $(INST_SCRIPT)/ws-upgrade
+	cp ws-upgrade $(INST_SCRIPT)/ws-upgrade
+	$(FIXIN) $(INST_SCRIPT)/ws-upgrade
+	-@$(CHMOD) $(PERM_RWX) $(INST_SCRIPT)/ws-upgrade
 
 
 # --- MakeMaker subdirs section:
@@ -451,7 +487,7 @@ clean ::
 # Delete temporary files (via clean) and also delete installed files
 realclean purge ::  clean
 	rm -rf $(INST_AUTODIR) $(INST_ARCHAUTODIR)
-	rm -f $(INST_LIBDIR)/WorkspaceText.pm $(INST_LIBDIR)/XFontSelect.pm $(INST_LIBDIR)/Shell.pm $(INST_LIBDIR)/RemoteFileSelect.pm $(INST_LIBDIR)/PrintDialog.pm $(INST_LIBDIR)/Workspace.pm $(INST_LIBDIR)/SearchDialog.pm
+	rm -f $(INST_LIBDIR)/WorkspaceText.pm $(INST_LIBDIR)/Shell.pm $(INST_LIBDIR)/XFontSelect.pm $(INST_LIBDIR)/RemoteFileSelect.pm $(INST_LIBDIR)/Workspace.pm $(INST_LIBDIR)/SearchDialog.pm
 	rm -rf Makefile Makefile.old
 
 
@@ -690,7 +726,7 @@ testdb_static :: testdb_dynamic
 # --- MakeMaker ppd section:
 # Creates a PPD (Perl Package Description) for a binary distribution.
 ppd:
-	@$(PERL) -e "print qq{<SOFTPKG NAME=\"Tk-PrintDialog\" VERSION=\"$,0,0,0\">\n}. qq{\t<TITLE>Tk-PrintDialog</TITLE>\n}. qq{\t<ABSTRACT></ABSTRACT>\n}. qq{\t<AUTHOR></AUTHOR>\n}. qq{\t<IMPLEMENTATION>\n}. qq{\t\t<OS NAME=\"$(OSNAME)\" />\n}. qq{\t\t<ARCHITECTURE NAME=\"sun4-solaris\" />\n}. qq{\t\t<CODEBASE HREF=\"\" />\n}. qq{\t</IMPLEMENTATION>\n}. qq{</SOFTPKG>\n}" > Tk-PrintDialog.ppd
+	@$(PERL) -e "print qq{<SOFTPKG NAME=\"Tk-Workspace\" VERSION=\"1,72,0,0\">\n}. qq{\t<TITLE>Tk-Workspace</TITLE>\n}. qq{\t<ABSTRACT></ABSTRACT>\n}. qq{\t<AUTHOR></AUTHOR>\n}. qq{\t<IMPLEMENTATION>\n}. qq{\t\t<OS NAME=\"$(OSNAME)\" />\n}. qq{\t\t<ARCHITECTURE NAME=\"sun4-solaris\" />\n}. qq{\t\t<CODEBASE HREF=\"\" />\n}. qq{\t</IMPLEMENTATION>\n}. qq{</SOFTPKG>\n}" > Tk-Workspace.ppd
 
 # --- MakeMaker pm_to_blib section:
 

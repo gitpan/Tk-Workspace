@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!perl 
 
 # mkws -- Workspace launcher
 # Substitute path of the perl binary on your system

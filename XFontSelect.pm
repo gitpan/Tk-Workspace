@@ -3,7 +3,7 @@ $VERSION=0.43;
 # This is a kludge to make the CPAN version software
 # and non-GNU make users happy.  The real version
 # is taken from the RCS record.
-my $RCSRevKey = '$Revision: 0.43 $';
+my $RCSRevKey = '$Revision: 0.44 $';
 $RCSRevKey =~ /Revision: (.*?) /;
 $VERSION=$1;
 use vars qw( $VERSION );
@@ -17,7 +17,7 @@ use vars qw( $VERSION );
   use Tk;
   use Tk::XFontSelect;
 
-  my $fontdialog = $mw -> FontSelect;
+  my $fontdialog = $mw -> XFontSelect;
   my $font = $fontdialog -> Show;
 
 =head1 DESCRIPTION
@@ -38,7 +38,7 @@ xlsfonts(1) man page.
 
 First Release Version
 
-$Revision: 0.43 $
+$Revision: 0.44 $
 
 =cut 
 

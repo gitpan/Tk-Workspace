@@ -1,8 +1,8 @@
-Tk::Workspace.pm, Version 1.74, installation:
+Tk::Workspace.pm, Version 1.75, installation:
 
 The Tk::Workspace.pm distribution has been tested only on the Linux
 and Solaris operating systems.  Refer all questions and problem
-reports to the author, rkiesling@mainmatter.com.
+reports to the author, Robert Allan Kiesling <rkiesling@earthlink.net>.
 
 
 System Requirements:
@@ -29,17 +29,17 @@ are required to enable specific features:
 
 Installation:
 
-1.  Untar the Tk-Workspace-1.74 archive with the guzip and tar commands:
+1.  Untar the Tk-Workspace-1.75 archive with the guzip and tar commands:
 
-  # gzip -dc Tk-Workspace-1.74.tar.gz | tar xvf -
+  # gzip -dc Tk-Workspace-1.75.tar.gz | tar xvf -
  
    or, using GNU tar,
 
-  # tar zxvf Tk-Workspace-1.74.tar.gz
+  # tar zxvf Tk-Workspace-1.75.tar.gz
 
 2.  Change to the top-level subdirectory:
 
-  # cd Tk-Workspace-1.74
+  # cd Tk-Workspace-1.75
 
 3.  Optionally, install the workspace.xpm icon in your normal personal
     or system icon directory if you have permission to do so.  (For
@@ -66,11 +66,6 @@ Installation:
   Enter Password:
   $ make install
 
-7.  Install the 'mkws' and 'upgrade' programs somewhere 
-    convenient, like /usr/local/bin, and copy the
-    'upgrade.man' file to '/usr/local/man/man1/upgrade.1'.  
-
-
 
 Copyright:
 
@@ -79,4 +74,4 @@ Please refer to the file "Artistic" in this directory.
 
 Bugs:
 
-Please send bug reports to: rkiesling@mainmatter.com
+Please send bug reports to: Robert Allan Kiesling <rkiesling@earthlink.net>

@@ -1,13 +1,9 @@
 package Tk::Workspace;
 # Temp version for CPAN
-$VERSION=1.72;
-my $RCSRevKey = '$Revision: 1.74 $';
+$VERSION=1.75;
+my $RCSRevKey = '$Revision: 1.75 $';
 $RCSRevKey =~ /Revision: (.*?) /;
 $VERSION=$1;
-
-# 
-# 1. Test version of filepath method.
-#
 
 require Exporter;
 use Carp;
@@ -381,7 +377,7 @@ sub menus {
     $self -> {wrapmenu} = ($self -> {menubar}) -> Menu;
     $self -> {scrollmenu} = ($self -> {menubar}) -> Menu;
     $self -> {modemenu} = ($self -> {menubar}) -> Menu;
-    ($self -> {helpmenu}) = ($self -> {menubar}) -> Menu;
+    $self -> {helpmenu} = ($self -> {menubar}) -> Menu;
 
     ($self -> {encodingmenu}) = ($self -> {menubar}) -> Menu;
 
@@ -510,11 +506,13 @@ sub menus {
 				    -menu => $self -> {wrapmenu} );
     $items = &WrapMenuItems($self -> {text});
     $self -> {wrapmenu} -> AddItems( @$items );
+    $self -> {wrapmenu} -> configure (-font => $menufont);
     $self -> {optionsmenu} -> add ( 'cascade',
 				    -label => 'Scroll Bars',
 				    -menu => $self -> {scrollmenu} );
     $self -> {scrollbuttons} = &ScrollMenuItems( $self );
     $self -> {scrollmenu} -> AddItems( @{$self -> {scrollbuttons}} );
+    $self -> {scrollmenu} -> configure (-font => $menufont);
     $self -> {optionsmenu} -> add( 'cascade', -labe => 'Output Encoding',
 				   -menu => $self -> {encodingmenu});
     $items = &EncodingMenuItems($self);
@@ -882,7 +880,8 @@ sub goto_line {
   my $l = $d -> add( 'Label', -text => 'Line Number: ',
 		     -font => $menufont )
     -> pack( -side => 'left', -padx => 5, -pady => 5 );
-
+  $d -> Subwidget ('B_Ok') -> configure (-font => $menufont);
+  $d -> Subwidget ('B_Cancel') -> configure (-font => $menufont);
   my $e = $d -> add( 'Entry', -width => 10 )
     -> pack( -side => 'left', -padx => 5, -pady => 5 );
   my ($row, $col) = split /\./, $self -> text -> index('insert');
@@ -957,6 +956,8 @@ sub setFillColumn {
 				     -buttons => [qw/Ok Dismiss/],
 				     -default_button => 'Ok' );
     my $oldmargin = $w -> text -> fillcolumn;
+    $d -> Subwidget ('B_Ok') -> configure (-font => $menufont);
+    $d -> Subwidget ('B_Dismiss') -> configure (-font => $menufont);
     my $e = $d -> add ('Entry', -width => 5,
 		       -textvariable => \$oldmargin) -> 
 	pack (-expand => '1', -fill => 'x', -padx => 5, -pady => 5);
@@ -1100,6 +1101,7 @@ sub error {
 					 -default_button => 'Ok',
 					 -font => $menufont,
 					 -buttons => [qw/Ok/] );
+  $d -> Subwidget ('B_Ok') -> configure (-font => $menufont);
   $d -> Show;
 }
 
@@ -1549,6 +1551,10 @@ sub close_dialog {
 	-> Dialog( -title => 'Close Workspace',
 		   -text => $notice, -bitmap => 'question',
 		   -buttons => [qw/Yes No Cancel/]);
+    $dialog -> configure (-font => $menufont);
+    $dialog -> Subwidget ('B_Yes') -> configure (-font => $menufont);
+    $dialog -> Subwidget ('B_No') -> configure (-font => $menufont);
+    $dialog -> Subwidget ('B_Cancel') -> configure (-font => $menufont);
     return $response = $dialog -> Show;
 }
 
@@ -2241,7 +2247,7 @@ Perl by Larry Wall and many others.
 
 =head1 REVISION
 
-$Id: Workspace.pm,v 1.74 2001/09/20 00:19:27 kiesling Exp $
+$Id: Workspace.pm,v 1.75 2002/08/22 21:10:49 kiesling Exp $
 
 =head1 SEE ALSO:
 
